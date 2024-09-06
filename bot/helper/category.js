@@ -5,7 +5,6 @@ const Categories = require("../../model/category");
 const get_all_categories = async (msg) => {
   const chatId = msg.from.id;
   const user = await Users.findOne({ chatId });
-  const categories = await Categories.find();
 
   bot.sendMessage(chatId, "Kategorilar ro'yxati", {
     reply_markup: {
@@ -39,21 +38,41 @@ const get_all_categories = async (msg) => {
 };
 
 const add_category = async (chatId) => {
-  const user = await Users.findOne({ chatId });
+  let user = await Users.findOne({ chatId });
+
+  user.action = "add_category";
 
   if (user.admin) {
-    await Users.findByIdAndUpdate(
+   await Users.findByIdAndUpdate(
       user._id,
-      { ...user, action: "add_category" },
+      user,
       { new: true }
     );
-    bot.sendMessage(chatId, "Yangi kategory nimini kriting")
-  }else{
-    bot.sendMessage(chatId, "Sizga bunday ruxsat mavjud emas")
+    bot.sendMessage(chatId, "Yangi kategory nomini kriting");
+  } else {
+    bot.sendMessage(chatId, "Sizga bunday ruxsat mavjud emas");
+  }
+};
+
+const new_category = async (msg) => {
+  const chatId = msg.from.id;
+  const text = msg.text;
+  const user = await Users.findOne({ chatId });
+
+  if (user.admin && user.action === "add_category") {
+    let newCategory = new Categories({
+      title: text,
+    });
+    await newCategory.save();
+    await Users.findByIdAndUpdate(user._id, { ...user, action: "category" });
+    get_all_categories(msg);
+  } else {
+    bot.sendMessage(chatId, "Sizga bunday ruxsat mavjud emas");
   }
 };
 
 module.exports = {
   get_all_categories,
-  add_category
+  add_category,
+  new_category,
 };

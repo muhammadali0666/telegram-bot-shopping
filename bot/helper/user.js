@@ -1,6 +1,6 @@
 const { bot } = require("../main");
 const Users = require("../../model/user");
-const { adminKeyboard, userKeyboard } = require("../menu/keyboard");
+const { userKeyboard } = require("../menu/keyboard");
 
 const get_all_user = async (msg) => {
   const chatId = msg.from.id;
