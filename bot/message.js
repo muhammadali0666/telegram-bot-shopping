@@ -22,7 +22,7 @@ bot.on("message", async (msg) => {
       get_all_user(msg);
     }
     if (text === "Category") {
-      get_all_categories(msg);
+      get_all_categories(chatId);
     }
   }
   if (foundUser.action === "add_category") {
